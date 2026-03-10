@@ -11,26 +11,10 @@
   "enabledManagers": ["tekton", "custom.regex"],
 
   // Tekton manager: updates Tekton bundle references in pipeline/task YAML files
+  // Only the fileMatch is set at the manager level; all other options go in packageRules
   "tekton": {
-    // Don't wait for a maintenance window; create PRs immediately
-    "schedule": ["at any time"],
-
-    // Scan all .yaml and .yml files, but only within the .tekton/ directory
+    // Scan all .yaml and .yml files
     "fileMatch": ["\\.yaml$", "\\.yml$"],
-    "includePaths": [".tekton/**"],
-
-    // Automatically merge PRs for tekton updates (no manual approval needed)
-    "automerge": true,
-
-    // Disable all tekton updates by default, then selectively re-enable below
-    "enabled": false,
-    "packageRules": [
-      {
-        // Only allow patch and digest updates; everything else stays disabled
-        "matchUpdateTypes": ["patch", "digest"],
-        "enabled": true
-      }
-    ]
   },
 
   // Custom regex manager: detects container image references in argfile.conf
@@ -60,6 +44,23 @@
   ],
 
   "packageRules": [
+    {
+      // Tekton: only look in .tekton/ directory, create PRs immediately,
+      // and auto-merge them without manual approval
+      "matchManagers": ["tekton"],
+      "includePaths": [".tekton/**"],
+      "schedule": ["at any time"],
+      "automerge": true,
+
+      // Disable all update types by default
+      "enabled": false
+    },
+    {
+      // Tekton: only allow patch and digest updates; everything else stays disabled
+      "matchManagers": ["tekton"],
+      "matchUpdateTypes": ["patch", "digest"],
+      "enabled": true
+    },
     {
       // For dependencies detected by the custom regex manager, automatically
       // pin images to their sha256 digest for reproducible builds
