@@ -2,21 +2,21 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   annotations:
-    build.appstudio.openshift.io/repo: https://github.com/red-hat-data-services/rhoai-konflux-tasks?rev={{revision}}
+    build.appstudio.openshift.io/repo: https://github.com/red-hat-data-services/devops-runner-images?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
-      == "main" && ( "runner-images/base/***".pathChanged() || ".tekton/base-runner-image-pull-request.yaml".pathChanged()
-      || "runner-images/base/Containerfile".pathChanged() )
+      == "main" && ( "./base/***".pathChanged() || ".tekton/devops-base-runner-pull-request.yaml".pathChanged()
+      || "Containerfile".pathChanged() )
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: runner-images
-    appstudio.openshift.io/component: base-runner-image
+    appstudio.openshift.io/application: devops-runner-images
+    appstudio.openshift.io/component: devops-base-runner
     pipelines.appstudio.openshift.io/type: build
-  name: base-runner-image-on-pull-request
+  name: devops-base-runner-on-pull-request
   namespace: rhoai-tenant
 spec:
   params:
@@ -33,9 +33,9 @@ spec:
     - linux/x86_64
     - linux/arm64
   - name: dockerfile
-    value: runner-images/base/Containerfile
+    value: Containerfile
   - name: path-context
-    value: runner-images/base
+    value: base
   pipelineSpec:
     description: |
       This pipeline is ideal for building multi-arch container images from a Containerfile while maintaining trust after pipeline customization.
@@ -610,7 +610,7 @@ spec:
     - name: netrc
       optional: true
   taskRunTemplate:
-    serviceAccountName: build-pipeline-base-runner-image
+    serviceAccountName: build-pipeline-devops-base-runner
   workspaces:
   - name: git-auth
     secret:
