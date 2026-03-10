@@ -1,0 +1,11 @@
+ARG BASE_RUNNER=quay.io/rhoai-devops/base-runner:latest
+FROM $BASE_RUNNER
+ARG TARGETARCH=arm64
+WORKDIR /app
+RUN dnf install -y tar
+RUN curl -fsSL https://mirror.openshift.com/pub/openshift-v4/${TARGETARCH}/clients/ocp/stable/openshift-client-linux.tar.gz | tar -xzf - 
+RUN curl -fsSL https://mirror.openshift.com/pub/openshift-v4/${TARGETARCH}/clients/ocp/stable/opm-linux-rhel9.tar.gz | tar -xzf -
+
+RUN mv opm-rhel9 opm
+
+RUN chmod +x oc opm kubectl && mv oc opm kubectl /usr/local/bin/ && rm /app/*

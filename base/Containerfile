@@ -1,4 +1,5 @@
-FROM registry.access.redhat.com/ubi9/ubi:latest
+ARG BASE_UBI=registry.access.redhat.com/ubi9/ubi:latest
+FROM $BASE_UBI
 ARG TARGETARCH
 RUN curl -sSL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH} -o /usr/local/bin/yq
 RUN chmod +x /usr/local/bin/yq
