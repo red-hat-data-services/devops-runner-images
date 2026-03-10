@@ -73,6 +73,10 @@ spec:
       VMs
     name: privileged-nested
     type: string
+  - default: ""
+    description: Name of a cluster secret to securely inject into build
+    name: additional-secret
+    type: string
   - default:
     - linux/x86_64
     description: List of platforms to build the container images on. The available
@@ -186,6 +190,8 @@ spec:
       - $(params.build-args[*])
     - name: BUILD_ARGS_FILE
       value: $(params.build-args-file)
+    - name: ADDITIONAL_SECRET
+      value: $(params.additional-secret)
     - name: PRIVILEGED_NESTED
       value: $(params.privileged-nested)
     - name: SOURCE_URL
