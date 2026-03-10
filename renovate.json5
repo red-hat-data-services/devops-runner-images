@@ -1,0 +1,70 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  // Only open PRs against the main branch
+  "baseBranches": ["main"],
+
+  // Create a GitHub issue that tracks all pending Renovate updates
+  "dependencyDashboard": true,
+
+  // Only use the tekton and custom regex managers; ignore all other default managers
+  "enabledManagers": ["tekton", "custom.regex"],
+
+  // Tekton manager: updates Tekton bundle references in pipeline/task YAML files
+  "tekton": {
+    // Don't wait for a maintenance window; create PRs immediately
+    "schedule": ["at any time"],
+
+    // Scan all .yaml and .yml files, but only within the .tekton/ directory
+    "fileMatch": ["\\.yaml$", "\\.yml$"],
+    "includePaths": [".tekton/**"],
+
+    // Automatically merge PRs for tekton updates (no manual approval needed)
+    "automerge": true,
+
+    // Disable all tekton updates by default, then selectively re-enable below
+    "enabled": false,
+    "packageRules": [
+      {
+        // Only allow patch and digest updates; everything else stays disabled
+        "matchUpdateTypes": ["patch", "digest"],
+        "enabled": true
+      }
+    ]
+  },
+
+  // Custom regex manager: detects container image references in argfile.conf
+  // Example line it parses: BASE_UBI=registry.access.redhat.com/ubi9/ubi:latest
+  "customManagers": [
+    {
+      "customType": "regex",
+
+      // Only scan files named argfile.conf
+      "fileMatch": ["(^|/)argfile\\.conf$"],
+
+      // Regex to extract image name, tag, and optional digest from lines like:
+      //   KEY=image:tag
+      //   KEY="image:tag@sha256:abc123..."
+      // Named groups:
+      //   depName      -> the image registry/path (e.g. registry.access.redhat.com/ubi9/ubi)
+      //   currentValue -> the tag (e.g. latest, 9.4)
+      //   currentDigest -> optional sha256 digest for pinned images
+      //   quote        -> handles optional surrounding quotes via backreference
+      "matchStrings": [
+        "=(?<quote>\"?)(?<depName>[^\\s:]+):(?<currentValue>[^\\s@\"^$]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?\\k<quote>"
+      ],
+
+      // Look up versions from a container image registry (Docker Hub, Quay, etc.)
+      "datasourceTemplate": "docker"
+    }
+  ],
+
+  "packageRules": [
+    {
+      // For dependencies detected by the custom regex manager, automatically
+      // pin images to their sha256 digest for reproducible builds
+      "matchManagers": ["custom.regex"],
+      "pinDigests": true
+    }
+  ],
+}
