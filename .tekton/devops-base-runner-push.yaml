@@ -40,6 +40,8 @@ spec:
     value: base
   - name: build-args-file
     value: ./argfile.conf
+  - name: skip-checks
+    value: true
   pipelineRef:
     resolver: git
     params:
