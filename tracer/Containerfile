@@ -1,0 +1,6 @@
+ARG BASE_RUNNER=quay.io/rhoai-devops/base-runner:latest
+FROM $BASE_RUNNER
+ARG TARGETARCH=arm64
+WORKDIR /app
+
+RUN git clone git@github.com:red-hat-data-services/rhods-devops-infra.git && rm -rf /app/*
