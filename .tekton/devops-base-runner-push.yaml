@@ -25,6 +25,9 @@ spec:
     value: '{{revision}}'
   - name: output-image
     value: quay.io/rhoai-devops/base-runner:{{revision}}
+  - name: additional-tags
+    value:
+      - latest
   - name: build-platforms
     value:
     - linux/x86_64
@@ -111,6 +114,10 @@ spec:
       description: List of platforms to build the container images on. The available
         set of values is determined by the configuration of the multi-platform-controller.
       name: build-platforms
+      type: array
+    - default: []
+      description: additional tags to attach to built image
+      name: additional-tags
       type: array
     results:
     - description: ""
@@ -545,6 +552,8 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
+      - name: ADDITIONAL_TAGS
+        value: $(params.additional-tags)
       runAfter:
       - build-image-index
       taskRef:
