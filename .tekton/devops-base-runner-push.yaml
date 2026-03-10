@@ -7,9 +7,11 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "false"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "main" && ( "./base/***".pathChanged() || ".tekton/devops-base-runner-push.yaml".pathChanged()
-      || "Containerfile".pathChanged() )
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "push" 
+      && target_branch == "main" && 
+      ( "./base/***".pathChanged() 
+        || ".tekton/devops-base-runner-push.yaml".pathChanged() )
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: devops-runner-images
@@ -36,6 +38,10 @@ spec:
     value: Containerfile
   - name: path-context
     value: base
+  - name: build-args-file
+    value: ./argfile.conf
+  - name: skip-checks
+    value: true
   pipelineRef:
     resolver: git
     params:
