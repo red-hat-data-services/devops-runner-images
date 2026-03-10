@@ -43,7 +43,7 @@ spec:
     resolver: git
     params:
       - name: url
-        value: "https://gitlab.com/red-hat-data-services/devops-runner-images.git"
+        value: "https://github.com/red-hat-data-services/devops-runner-images.git"
       - name: revision
         value: '{{revision}}'
       - name: pathInRepo
