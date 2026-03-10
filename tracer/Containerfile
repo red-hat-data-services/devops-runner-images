@@ -11,4 +11,4 @@ RUN --mount=type=secret,id=${SECRET_NAME}/ssh-privatekey \
 FROM $BASE_RUNNER
 COPY --from=git-clone /app/rhods-devops-infra/tools/tracer/tracer.sh /usr/local/bin/tracer.sh
 RUN chmod +x /usr/local/bin/tracer.sh
-ENTRYPOINT ["/app/tracer.sh"]
+ENTRYPOINT ["/usr/local/bin/tracer.sh"]
