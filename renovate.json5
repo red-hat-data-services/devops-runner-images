@@ -1,0 +1,34 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": ["main"],
+  "dependencyDashboard": true,
+  "enabledManagers": ["tekton", "custom.regex"],
+  "tekton": {
+    "schedule": ["at any time"],
+    "fileMatch": ["\\.yaml$", "\\.yml$"],
+    "includePaths": [".tekton/**"],
+    "automerge": true,
+    "packageRules": [
+      {
+        "matchUpdateTypes": ["major", "minor", "pin", "pinDigest"],
+        "enabled": false
+      }
+    ]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["(^|/)argfile\\.conf$"],
+      "matchStrings": [
+        "=(?<quote>\"?)(?<depName>[^\\s:]+):(?<currentValue>[^\\s@\"^$]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?\\k<quote>"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["custom.regex"],
+      "pinDigests": true
+    }
+  ],
+}
