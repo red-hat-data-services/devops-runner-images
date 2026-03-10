@@ -2,7 +2,7 @@ ARG BASE_RUNNER=quay.io/rhoai-devops/base-runner:latest
 ARG SECRET_NAME=devops-infra-ssh-key-devops-image-builds
 FROM $BASE_RUNNER as git-clone
 WORKDIR /app
-
+ENV SECRET_NAME=${SECRET_NAME}
 ENV GIT_SSH_COMMAND="ssh -i /run/secrets/${SECRET_NAME}/ssh-privatekey -o UserKnownHostsFile=/run/secrets/${SECRET_NAME}/known_hosts"
 RUN git clone git@github.com:red-hat-data-services/rhods-devops-infra.git 
 
